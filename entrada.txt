@@ -1,0 +1,22 @@
+var a
+var vetor[10]
+
+a = 100
+vetor[4] = 30
+vetor[3] = a
+vetor[2] = vetor[4] * 2
+
+PRINT (a)
+PRINT (vetor[4])
+PRINT (vetor[3])
+PRINT (vetor[2])
+
+IF (vetor[4] < vetor[3]){
+    PRINT (vetor[4])
+}
+ELSE{
+    PRINT (vetor[3])
+}
+	
+FIM
+
