@@ -5,27 +5,24 @@
 
 %}
 
- // Definições de padrões (macros)
- // NUM   : números (inteiros ou ponto flutuante)
- // VARS  : identificador de variável (letras seguidas de dígitos opcionais)
- // TEXTO : texto (token para strings)
+%x COMMENT
+
+
  
 NUM [0-9]+\.?[0-9]*
 VARS [a-z]+[0-9]*
-FIM "FIM"
-IF "IF"
-ELSE "ELSE"
-WHILE "WHILE"
-PRINT "PRINT"
-PRINTT "PRINTT"
-SCAN "LER"
-SCANS "LERS"
+IF "if"
+ELSE "else"
+WHILE "while"
+PRINT "print"
+PRINTT "printt"
+SCAN "scan"
+SCANS "scans"
 DECL "var"
-TEXTO [a-zA-Z]+   /* uma ou mais letras (texto simples) */
+
+
 
 %%
- /* Regras de associação entre texto reconhecido e tokens retornados ao parser */
-{FIM}     { return FIM; }
 {IF}      { return IF; }
 {ELSE}    { return ELSE; }
 {WHILE}   { return WHILE; }
@@ -34,6 +31,12 @@ TEXTO [a-zA-Z]+   /* uma ou mais letras (texto simples) */
 {SCAN}    { return SCAN; }
 {SCANS}   { return SCANS; }
 {DECL}    { return DECL; }
+"//".*          { /* ignora comentário de linha */ }
+"/*"            { BEGIN(COMMENT); }
+<COMMENT>"*/"   { BEGIN(INITIAL); }
+<COMMENT>\n     { /* mantém contagem de linhas */ }
+<COMMENT>.       { /* ignora conteúdo do bloco */ }
+<COMMENT><<EOF>> { fprintf(stderr, "Unterminated block comment\n"); exit(1); }
 
 {VARS} {
 	strcpy(yylval.str, yytext);

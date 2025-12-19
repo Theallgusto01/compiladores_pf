@@ -1,0 +1,69 @@
+/* ipl code example 
+ * - Incredible Progamming Language -
+ * Designed for educational purposes
+ * Developed by: Thealg0
+ *
+*/
+
+
+// Exemplo de comentário de linha
+
+/*
+   Exemplo de comentário de bloco
+*/
+
+// Declaração de variáveis
+
+var input
+var base
+var threshold
+var counter
+var limit
+var sum
+var difference
+var greeting
+var status
+var numbers[3]
+
+scan (input)
+scans (greeting)
+scans (status)
+
+base = 10
+threshold = 25
+difference = base - input
+
+IF (difference < 0) {
+    PRINT (-difference)
+}
+ELSE {
+    PRINT (difference)
+}
+
+numbers[0] = input
+numbers[1] = base + 5
+numbers[2] = numbers[1] / 2
+
+counter = 0
+limit = 3
+sum = 0
+
+WHILE (counter < limit) {
+    sum = sum + counter * numbers[2]
+    counter = counter + 1
+}
+
+PRINT (numbers[0])
+PRINT (numbers[1])
+PRINT (numbers[2])
+PRINT (sum)
+
+IF (numbers[1] == numbers[2]) {
+    PRINT (0)
+}
+ELSE {
+    PRINT (numbers[1] - numbers[2])
+}
+
+PRINTT (greeting)
+PRINTT (status)
