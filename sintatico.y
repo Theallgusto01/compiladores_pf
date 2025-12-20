@@ -361,8 +361,19 @@ double eval(Ast * a) {
 			break;
 
 		case 'Y': /* print string */
-			eval_str_result = eval2(a->left);
-			if(eval_str_result) printf("%s\n", eval_str_result);
+				/* print a string. a->left can be either a string-variable reference (nodetype 'Q')
+				   or a literal text node (we'll use nodetype 'X' for text literals). */
+				if(a->left) {
+					if(a->left->nodetype == 'Q'){
+						eval_str_result = eval2(a->left);
+						if(eval_str_result) printf("%s\n", eval_str_result);
+					} else if(a->left->nodetype == 'X'){
+						printf("%s\n", ((TXT *)a->left)->text);
+					} else {
+						/* unexpected node type for string print */
+						printf("(error) cannot print node type %c\n", a->left->nodetype);
+					}
+				}
 			break;
 
 		case 'V': /* declare var */
@@ -431,6 +442,7 @@ stmt: IF '(' exp ')' '{' list '}' %prec IFX {$$ = newflow('I', $3, $6, NULL);}
 	| DECL VARS '['NUM']'	{ $$ = newarray('a',$2,$4);}
 	
 	| PRINT '(' exp ')' 	{$$ = newast('P',$3,NULL);}
+	| PRINT '(' exp1 ')' 	{$$ = newast('Y',$3,NULL);} 
 	| PRINTT '(' exp1 ')' 	{$$ = newast('Y',$3,NULL);}
 	| SCAN '('VARS')'		{$$ = newvarnode('S',$3);}
 	| SCANS '('VARS')'		{$$ = newvarnode('T',$3);}
@@ -458,6 +470,7 @@ exp:
 
 exp1: 
 	VARS {$$ = new_string_value_reference($1);} 			
+	| TEXTO { $$ = newtext('X', $1); }
 	;
 %%
 
@@ -471,7 +484,7 @@ int main(int argc, char **argv){
 		filename = argv[1];
 		input = fopen(filename, "r");
 	} else {
-		filename = "entrada.ipl";
+		filename = "entrada.d";
 		input = fopen(filename, "r");
 		if(!input){
 			filename = "entrada.txt";
@@ -493,6 +506,8 @@ int main(int argc, char **argv){
 
 /* Implementação de yyerror exigida pelo parser gerado pelo Bison */
 void yyerror(char *s){
-    fprintf(stderr, "%s\n", s);
+	/* show the offending token for easier debugging */
+	extern char *yytext;
+	fprintf(stderr, "%s at '%s'\n", s, yytext ? yytext : "(null)");
 }
 

@@ -10,7 +10,8 @@
 
  
 NUM [0-9]+\.?[0-9]*
-VARS [a-z]+[0-9]*
+/* Identifier: allow letters, underscores and digits (start with letter or underscore) */
+VARS [a-zA-Z_][a-zA-Z0-9_]*
 IF "if"
 ELSE "else"
 WHILE "while"
@@ -47,6 +48,21 @@ DECL "var"
 {NUM} {
 	yylval.flo = atof(yytext);
 	return NUM;
+}
+
+\"[^\"]*\" {
+	/* string literal: remove surrounding quotes and return TEXTO */
+	int len = strlen(yytext);
+	if(len >= 2) {
+		/* copy without the starting and ending quote */
+		int copy_len = len - 2;
+		if(copy_len > sizeof(yylval.str)-1) copy_len = sizeof(yylval.str)-1;
+		strncpy(yylval.str, yytext+1, copy_len);
+		yylval.str[copy_len] = '\0';
+	} else {
+		yylval.str[0] = '\0';
+	}
+	return TEXTO;
 }
 
 [-+()=\/*^{};\[\]] { return *yytext; }
